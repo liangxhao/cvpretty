@@ -27,7 +27,8 @@ def allclose_nparray(data_expected, data_me, rtol, atol, equal_nan=True):
 
 ##############################################################################
 # NCHW
-images = np.random.randn(244, 25, 51, 174).astype(np.float32)
+# images = np.random.uniform(low=-100, high=100, size=(244, 25, 51, 174)).astype(np.float32)
+images = np.random.random((244, 25, 51, 174)).astype(np.float32)
 size = [74, 61]
 
 ############################ 1 ###############################################
