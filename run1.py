@@ -1,19 +1,7 @@
-import tensorflow as tf
-import numpy as np
+axis = [4, 2, 2, 1, 1]
+rank = 3
 
-shape = [6, 3]
-values = [[1, 2, 3, 4]]
-default_value = 7
-row_partition_tensors = [0, 1, 2, 3, 4]
-row_partition_types = ['ROW_SPLITS']
+validator.check_value_type("axis", axis, [int, tuple, list], 'nansum')
+validator.check_axis_valid(axis, rank)
 
 
-y=tf.raw_ops.RaggedTensorToTensor(
-    shape=shape,
-    values=values,
-    default_value=default_value,
-    row_partition_tensors=row_partition_tensors,
-    row_partition_types=row_partition_types,
-)
-
-print(y)

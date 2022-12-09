@@ -24,12 +24,13 @@ def allclose_nparray(data_expected, data_me, rtol, atol, equal_nan=True):
     else:
         assert np.array(data_expected).shape == np.array(data_me).shape
 
-
+loss = 1e-3
 ##############################################################################
 # NCHW
 # images = np.random.uniform(low=-100, high=100, size=(244, 25, 51, 174)).astype(np.float32)
 images = np.random.random((244, 25, 51, 174)).astype(np.float32)
 size = [74, 61]
+
 
 ############################ 1 ###############################################
 # tf: align_corners=False, half_pixel_centers=True
@@ -37,7 +38,7 @@ size = [74, 61]
 y_tf = tf.raw_ops.ResizeBilinear(images=images.transpose([0, 2, 3, 1]), size=size, align_corners=False, half_pixel_centers=True).numpy().transpose([0, 3, 1, 2])
 y_pt = F.interpolate(torch.from_numpy(images), size, align_corners=False, mode='bilinear').numpy()
 
-allclose_nparray(y_pt, y_tf, 1e-4, 1e-4)
+allclose_nparray(y_pt, y_tf, loss, loss)
 
 ############################ 2 ###############################################
 # tf: align_corners=True, half_pixel_centers=False
@@ -45,7 +46,7 @@ allclose_nparray(y_pt, y_tf, 1e-4, 1e-4)
 y_tf = tf.raw_ops.ResizeBilinear(images=images.transpose([0, 2, 3, 1]), size=size, align_corners=True, half_pixel_centers=False).numpy().transpose([0, 3, 1, 2])
 y_pt = F.interpolate(torch.from_numpy(images), size, align_corners=True, mode='bilinear').numpy()
 
-allclose_nparray(y_pt, y_tf, 1e-4, 1e-4)
+allclose_nparray(y_pt, y_tf, loss, loss)
 
 
 ############################ 3 ###############################################
@@ -54,4 +55,4 @@ allclose_nparray(y_pt, y_tf, 1e-4, 1e-4)
 y_tf = tf.raw_ops.ResizeBilinear(images=images.transpose([0, 2, 3, 1]), size=size, align_corners=False, half_pixel_centers=False).numpy().transpose([0, 3, 1, 2])
 y_pt = F.interpolate(torch.from_numpy(images), size, align_corners=False, mode='bilinear').numpy()
 
-allclose_nparray(y_pt, y_tf, 1e-4, 1e-4)
+allclose_nparray(y_pt, y_tf, loss, loss)

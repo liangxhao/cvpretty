@@ -1,20 +1,36 @@
-import tensorflow as tf
 import numpy as np
-x1 = list([i for i in range(10000)])
-x1 = tf.convert_to_tensor(x1, dtype=tf.int32)
 
-x2 = tf.convert_to_tensor([20988], dtype=tf.int32)
+weight = np.array([[-7, 9, 7],
+                   [-50, 6, 4],
+                   [-10, -5, -7],
+                   [-1, -6, -3],
+                   [-2, 2, -5]]
+                  )
+indices = np.array([0, 1, 2, 1, 2])
+offsets = np.array([0, 1, 3])
+bag_size = np.array([1, 2, 2])
+offset2bag = np.array([0, 1, 1, 2, 2])
 
-x3 = list([i for i in range(10000)])
-x3 = tf.convert_to_tensor(x3, dtype=tf.float32)
+numIndices = indices.shape[0]
+numBags = offsets.shape[0]
+featureSize = weight.shape[1]
 
-# y = tf.gather_nd(x1, x2)
-# y = tf.raw_ops.SparseToDense(sparse_indices=x1, output_shape=x2, sparse_values=x3, default_value=0)
+max_indices = np.zeros((numBags, featureSize), dtype=np.int32)
+output = np.zeros((numBags, featureSize), dtype=np.int32)
 
-with tf.GradientTape() as g:
-    g.watch(x1)
-    y = tf.raw_ops.SparseToDense(sparse_indices=x1, output_shape=x2, sparse_values=x3, default_value=0)
-    dx = g.gradient(y, x3)
+for i in range(numIndices):
+    bag = offset2bag[i]
+    word_idx = indices[i]
+    for dim in range(featureSize):
+        current_item = output[bag, dim]
+        weight_item = weight[word_idx, dim]
 
-print(dx)
+        is_first_for_bag = (i == 0) or offset2bag[i-1] != bag
 
+        if is_first_for_bag or weight_item > current_item:
+            output[bag, dim] = weight_item
+            max_indices[bag,dim] = word_idx
+
+
+print(output)
+print(max_indices)
