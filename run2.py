@@ -17,3 +17,4 @@ with tf.GradientTape() as g:
     dx = g.gradient(y, x3)
 
 print(dx)
+
