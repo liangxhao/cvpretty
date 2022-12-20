@@ -2,7 +2,7 @@ import mindspore
 import numpy as np
 import torch
 import mindspore as ms
-
+from mindspore.ops._grad.grad_math_ops import binop_grad_common
 
 def get_pt_dx2(x1_pt, x2_pt, indices_pt, grad_pt):
     x2_pt.requires_grad_(True)
@@ -18,16 +18,26 @@ def get_ms_dx2(x1_ms, x2_ms, indices_ms, grad_ms):
     align_indices_ms = [ms.ops.tile(x, (maxsize,)) if x.shape[0] == 1 else x for x in indices_ms]
     align_indices_ms = ms.ops.stack(align_indices_ms).T
     values_grad = ms.ops.gather_nd(grad_ms, align_indices_ms)
-    if x2_ms.shape[0] == 1:
-        values_grad = values_grad.sum().reshape(1)
+    if values_grad.shape != x2_ms.shape:
+        _, values_grad = binop_grad_common(x1_ms, x2_ms, grad_ms, values_grad)
     return values_grad
 
 if __name__ == '__main__':
     x1 = np.random.randint(-128, 128, (5, 6, 7, 8)).astype(np.float32)
-    x2 = np.random.randint(-128, 128, 1).astype(np.float32)
-    indices = [[2]]
+
+    # example 1
+    # x2 = np.random.randint(-128, 128, 1).astype(np.float32)
+    # indices = [[2]]
+
+    # example 2
     # x2 = np.random.randint(-128, 128, 2).astype(np.float32)
     # indices = [[2], [1,2], [2, 3], [3, 4]]
+
+    # example 3
+    x2 = np.random.randint(-128, 128, 8).astype(np.float32)
+    indices = [[0, 1]]
+
+
     grad = np.random.randint(-128, 128, x1.shape).astype(x1.dtype)
 
     # pytorch
@@ -44,8 +54,8 @@ if __name__ == '__main__':
     grad_ms = ms.Tensor(grad)
     dx2_ms = get_ms_dx2(x1_ms, x2_ms, indices_ms, grad_ms).asnumpy()
 
-    print("pytorch: ", dx2_pt)
-    print("mindspore: ", dx2_ms)
+    print("pytorch.shape: ", dx2_pt.shape)
+    print("mindspore.shape: ", dx2_ms.shape)
 
     assert np.allclose(dx2_ms, dx2_pt)
 
