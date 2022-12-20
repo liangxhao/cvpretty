@@ -25,15 +25,15 @@ def get_ms_dx2(x1_ms, x2_ms, indices_ms, grad_ms):
 if __name__ == '__main__':
     x1 = np.random.randint(-128, 128, (5, 6, 7, 8)).astype(np.float32)
 
-    # example 1
+    # example: 1
     # x2 = np.random.randint(-128, 128, 1).astype(np.float32)
     # indices = [[2]]
 
-    # example 2
+    # example: max size of the tensors in `indices`
     # x2 = np.random.randint(-128, 128, 2).astype(np.float32)
     # indices = [[2], [1,2], [2, 3], [3, 4]]
 
-    # example 3
+    # example: x1.shape[-1]
     x2 = np.random.randint(-128, 128, 8).astype(np.float32)
     indices = [[0, 1]]
 
